@@ -1,11 +1,13 @@
 package ru.hpclab.hl.module1.service;
 
+import org.springframework.stereotype.Service;
 import ru.hpclab.hl.module1.model.User;
 import ru.hpclab.hl.module1.repository.UserRepository;
 
 import java.util.List;
 import java.util.UUID;
 
+//@Service
 public class UserService {
 
     private final UserRepository userRepository;
