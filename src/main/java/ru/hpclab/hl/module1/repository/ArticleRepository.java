@@ -3,9 +3,7 @@ package ru.hpclab.hl.module1.repository;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 import ru.hpclab.hl.module1.controller.exeption.ArticleException;
-import ru.hpclab.hl.module1.controller.exeption.UserException;
 import ru.hpclab.hl.module1.model.Article;
-//import ru.hpclab.hl.module1.model.User;
 
 import java.util.*;
 
@@ -54,7 +52,7 @@ public class ArticleRepository {
     public Article put(Article article) {
         final var articleData = articles.get(article.getIdentifier());
         if (articleData == null) {
-            throw new UserException(format(ARTICLE_NOT_FOUND_MSG, article.getIdentifier()));
+            throw new ArticleException(format(ARTICLE_NOT_FOUND_MSG, article.getIdentifier()));
         }
 
         final var removed = articles.remove(article.getIdentifier());
