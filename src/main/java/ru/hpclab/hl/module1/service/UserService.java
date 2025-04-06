@@ -9,31 +9,25 @@ import java.util.UUID;
 
 @Service
 public class UserService {
+    private final UserRepository repository;
 
-    private final UserRepository userRepository;
+    public UserService(UserRepository repository) {
+        this.repository = repository;
+    }
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public User addUser(User user) {
+        return repository.save(user);
+    }
+
+    public User getUser(String id) {
+        return repository.findById(UUID.fromString(id)).orElse(null);
     }
 
     public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    public User getUserById(String id) {
-        return userRepository.findById(UUID.fromString(id));
-    }
-
-    public User saveUser(User user) {
-        return userRepository.save(user);
+        return repository.findAll();
     }
 
     public void deleteUser(String id) {
-        userRepository.delete(UUID.fromString(id));
-    }
-
-    public User updateUser(String id, User user) {
-        user.setIdentifier(UUID.fromString(id));
-        return userRepository.put(user);
+        repository.deleteById(UUID.fromString(id));
     }
 }

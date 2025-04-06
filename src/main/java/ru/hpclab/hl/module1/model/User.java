@@ -1,77 +1,31 @@
 package ru.hpclab.hl.module1.model;
 
-import org.springframework.lang.NonNull;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.UUID;
 import java.time.LocalDate;
+import java.util.UUID;
 
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "t_user")
 public class User {
-    @NonNull
-    private UUID identifier;
-    @NonNull
+
+    @Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private UUID id;
+
+    @Column(nullable = false, unique = true)
     private String login;
-    @NonNull
+
+    @Column(nullable = false)
     private String university;
-    @NonNull
-    private LocalDate subscriptionEndDate;
 
-    // Конструкторы
-    public User(@NonNull UUID identifier, @NonNull String login, @NonNull String university,
-                @NonNull LocalDate subscriptionEndDate) {
-        this.identifier = identifier;
-        this.login = login;
-        this.university = university;
-        this.subscriptionEndDate = subscriptionEndDate;
-    }
+    @Column(nullable = false)
+    private LocalDate subscription_end_date;
 
-    public User() {
-    }
-
-    // Геттеры и сеттеры
-    @NonNull
-    public UUID getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(@NonNull UUID identifier) {
-        this.identifier = identifier;
-    }
-
-    @NonNull
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(@NonNull String login) {
-        this.login = login;
-    }
-
-    @NonNull
-    public String getUniversity() {
-        return university;
-    }
-
-    public void setUniversity(@NonNull String university) {
-        this.university = university;
-    }
-
-    @NonNull
-    public LocalDate getSubscriptionEndDate() {
-        return subscriptionEndDate;
-    }
-
-    public void setUniversity(@NonNull LocalDate subscriptionEndDate) {
-        this.subscriptionEndDate = subscriptionEndDate;
-    }
-
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "identifier=" + identifier +
-                ", login='" + login + '\'' +
-                ", university='" + university + '\'' +
-                ", subscriptionEndDate=" + subscriptionEndDate +
-                '}';
-    }
 }

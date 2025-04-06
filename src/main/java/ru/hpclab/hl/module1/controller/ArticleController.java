@@ -1,5 +1,7 @@
 package ru.hpclab.hl.module1.controller;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hpclab.hl.module1.model.Article;
 import ru.hpclab.hl.module1.service.ArticleService;
@@ -7,36 +9,40 @@ import ru.hpclab.hl.module1.service.ArticleService;
 import java.util.List;
 
 @RestController
+@RequestMapping("/articles")
 public class ArticleController {
     private final ArticleService articleService;
 
-    @Autowired
     public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
     }
 
-    @GetMapping("/articles")
-    public List<Article> getArticles() {
-        return articleService.getAllArticles();
+    // Добавление новой статьи
+    @PostMapping
+    public ResponseEntity<Article> addArticle(@RequestBody Article article) {
+        Article savedArticle = articleService.addArticle(article);
+        return new ResponseEntity<>(savedArticle, HttpStatus.CREATED);
     }
 
-    @GetMapping("/articles/{id}")
-    public Article getArticleById(@PathVariable String id) {
-        return articleService.getArticleById(id);
+    // Получение статьи по ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Article> getArticle(@PathVariable String id) {
+        Article article = articleService.getArticle(id);
+        return article != null ? new ResponseEntity<>(article, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/articles/{id}")
-    public void deleteArticle(@PathVariable String id) {
+    // Получение всех статей
+    @GetMapping
+    public ResponseEntity<List<Article>> getAllArticles() {
+        List<Article> articles = articleService.getAllArticles();
+        return new ResponseEntity<>(articles, HttpStatus.OK);
+    }
+
+    // Удаление статьи по ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteArticle(@PathVariable String id) {
         articleService.deleteArticle(id);
-    }
-
-    @PostMapping(value = "/articles/")
-    public Article saveArticle(@RequestBody Article client) {
-        return articleService.saveArticle(client);
-    }
-
-    @PutMapping(value = "/articles/{id}")
-    public Article updateArticle(@PathVariable(required = false) String id, @RequestBody Article article) {
-        return articleService.updateArticle(id, article);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

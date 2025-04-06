@@ -1,45 +1,44 @@
 package ru.hpclab.hl.module1.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hpclab.hl.module1.model.User;
 import ru.hpclab.hl.module1.service.UserService;
-
 import java.util.List;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
-
     private final UserService userService;
 
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
-    public List<User> getUsers() {
-        return userService.getAllUsers();
+    // Добавление нового пользователя
+    @PostMapping
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        return ResponseEntity.ok(userService.addUser(user));
     }
 
-    @GetMapping("/users/{id}")
-    public User getUserById(@PathVariable String id) {
-        return userService.getUserById(id);
+    // Получение пользователя по ID
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable String id) {
+        User user = userService.getUser(id);
+        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/users/{id}")
-    public void deleteUser(@PathVariable String id) {
+    // Получение всех пользователей
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    // Удаление пользователя по ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
-
-    @PostMapping(value = "/users/")
-    public User saveUser(@RequestBody User client) {
-        return userService.saveUser(client);
-    }
-
-    @PutMapping(value = "/users/{id}")
-    public User updateUser(@PathVariable(required = false) String id, @RequestBody User user) {
-        return userService.updateUser(id, user);
-    }
-
 }

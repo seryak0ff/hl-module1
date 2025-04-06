@@ -1,87 +1,40 @@
 package ru.hpclab.hl.module1.model;
 
-import org.springframework.lang.NonNull;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "t_download")
 public class Download {
-    @NonNull
-    private UUID Id;
-    @NonNull
+
+    @Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    @NonNull
+
+    @ManyToOne
+    @JoinColumn(name = "article_id", nullable = false)
     private Article article;
-    @NonNull
-    private LocalDate downloadDate;
-    @NonNull
-    private String format;  // PDF или HTML
 
-    // Конструкторы
-    public Download(@NonNull User user, @NonNull Article article, @NonNull LocalDate downloadDate, @NonNull String format){
-        this.user = user;
-        this.article = article;
-        this.downloadDate = downloadDate;
-        this.format = format;
-    }
+    @Column(nullable = false)
+    private LocalDateTime downloadDate;
 
-    public Download(){
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DownloadFormat format;
 
-    // Геттеры и сеттеры
-    @NonNull
-    public UUID getId() {
-        return Id;
-    }
-
-    public void setId(@NonNull UUID Id) {
-        this.Id = Id;
-    }
-
-    @NonNull
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(@NonNull User user) {
-        this.user = user;
-    }
-
-    @NonNull
-    public Article getArticle() {
-        return article;
-    }
-
-    public void setArticle(@NonNull Article article) {
-        this.article = article;
-    }
-
-    @NonNull
-    public LocalDate getDownloadDate() {
-        return downloadDate;
-    }
-
-    public void setDownloadDate(@NonNull LocalDate downloadDate) {
-        this.downloadDate = downloadDate;
-    }
-
-    @NonNull
-    public String getFormat() {
-        return format;
-    }
-
-    public void setFormat(@NonNull User user) {
-        this.user = user;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Download{" +
-                "user=" + user +
-                ", article=" + article +
-                ", downloadDate=" + downloadDate +
-                ", format='" + format + '\'' +
-                '}';
+    public enum DownloadFormat {
+        PDF, HTML
     }
 }

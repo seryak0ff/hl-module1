@@ -9,30 +9,25 @@ import java.util.UUID;
 
 @Service
 public class ArticleService {
-    private final ArticleRepository articleRepository;
+    private final ArticleRepository repository;
 
-    public ArticleService(ArticleRepository articleRepository) {
-        this.articleRepository = articleRepository;
+    public ArticleService(ArticleRepository repository) {
+        this.repository = repository;
+    }
+
+    public Article addArticle(Article article) {
+        return repository.save(article);
+    }
+
+    public Article getArticle(String id) {
+        return repository.findById(UUID.fromString(id)).orElse(null);
     }
 
     public List<Article> getAllArticles() {
-        return articleRepository.findAll();
-    }
-
-    public Article getArticleById(String id) {
-        return articleRepository.findById(UUID.fromString(id));
-    }
-
-    public Article saveArticle(Article article) {
-        return articleRepository.save(article);
+        return repository.findAll();
     }
 
     public void deleteArticle(String id) {
-        articleRepository.delete(UUID.fromString(id));
-    }
-
-    public Article updateArticle(String id, Article article) {
-        article.setIdentifier(UUID.fromString(id));
-        return articleRepository.put(article);
+        repository.deleteById(UUID.fromString(id));
     }
 }
