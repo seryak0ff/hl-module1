@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public class Download {
     @NonNull
+    private UUID Id;
+    @NonNull
     private User user;
     @NonNull
     private Article article;
@@ -27,6 +29,15 @@ public class Download {
     }
 
     // Геттеры и сеттеры
+    @NonNull
+    public UUID getId() {
+        return Id;
+    }
+
+    public void setId(@NonNull UUID Id) {
+        this.Id = Id;
+    }
+
     @NonNull
     public User getUser() {
         return user;
@@ -51,7 +62,7 @@ public class Download {
     }
 
     public void setDownloadDate(@NonNull LocalDate downloadDate) {
-            this.downloadDate = downloadDate;
+        this.downloadDate = downloadDate;
     }
 
     @NonNull
@@ -59,7 +70,7 @@ public class Download {
         return format;
     }
 
-    public void setF(@NonNull User user) {
+    public void setFormat(@NonNull User user) {
         this.user = user;
     }
 
