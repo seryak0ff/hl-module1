@@ -27,7 +27,7 @@ public class Download {
     @JoinColumn(name = "article_id", nullable = false)
     private Article article;
 
-    @Column(nullable = false)
+    @Column(name = "download_date", nullable = false)
     private LocalDateTime downloadDate;
 
     @Enumerated(EnumType.STRING)
