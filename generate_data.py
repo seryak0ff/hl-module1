@@ -1,3 +1,4 @@
+import os
 import psycopg2
 import uuid
 import random
@@ -6,14 +7,23 @@ from datetime import datetime, timedelta
 
 # Подключение к базе данных PostgreSQL
 def connect_db():
+
     return psycopg2.connect(
-        dbname="articles", # Имя вашей базы данных
-        user="admin",      # Имя пользователя
-        password="secret", # Ваш пароль
-#         host="host.docker.internal",  # Адрес хоста
-        host="localhost",  # Адрес хоста
-        port="5432"        # Порт PostgreSQL
+        host=os.getenv('DB_HOST', 'localhost'),
+        port=os.getenv('DB_PORT', '5432'),
+        dbname=os.getenv('DB_NAME', 'articles'),
+        user=os.getenv('DB_USER', 'admin'),
+        password=os.getenv('DB_PASSWORD', 'secret')
     )
+
+#     return psycopg2.connect(
+#         dbname="articles", # Имя вашей базы данных
+#         user="admin",      # Имя пользователя
+#         password="secret", # Ваш пароль
+# #         host="host.docker.internal",  # Адрес хоста
+#         host="localhost",  # Адрес хоста
+#         port="5432"        # Порт PostgreSQL
+#     )
 
 # Функция для генерации случайных данных для таблицы t_user
 def generate_users(n):
