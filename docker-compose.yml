@@ -14,8 +14,13 @@ services:
     volumes:
       - articles_data:/var/lib/postgresql/data
       - ./src/main/resources/db/migration:/docker-entrypoint-initdb.d  # Подключаем папку с миграциями
-#    networks:
-#      - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d articles" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -28,25 +33,30 @@ services:
       - "5050:80"
     depends_on:
       - postgres
-#
-#  app:
-#    build: .
-#    container_name: spring-boot-app
-#    depends_on:
+    networks:
+      - app-network
+
+  app:
+    build: .
+    container_name: spring-boot-app
+    depends_on:
 #      - postgres
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/gym
-#      SPRING_DATASOURCE_USERNAME: admin
-#      SPRING_DATASOURCE_PASSWORD: secret
-#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-#    ports:
-#      - "8080:8080"
-#    networks:
-#      - app-network
+      postgres:
+        condition: service_healthy
 #
-#networks:
-#  app-network:
-#    driver: bridge
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/articles
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: secret
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   articles_data:
