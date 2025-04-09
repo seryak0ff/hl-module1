@@ -2,7 +2,10 @@ import os
 import psycopg2
 import uuid
 import random
-import faker
+#import faker
+from faker import Faker
+import random
+import uuid
 from datetime import datetime, timedelta
 
 # Подключение к базе данных PostgreSQL
@@ -27,7 +30,7 @@ def connect_db():
 
 # Функция для генерации случайных данных для таблицы t_user
 def generate_users(n):
-    fake = faker.Faker()
+    fake = Faker()
     users = []
     for _ in range(n):
         user_id = str(uuid.uuid4())
@@ -39,7 +42,7 @@ def generate_users(n):
 
 # Функция для генерации случайных данных для таблицы t_article
 def generate_articles(n):
-    fake = faker.Faker()
+    fake = Faker()
     articles = []
     for _ in range(n):
         article_id = str(uuid.uuid4())
