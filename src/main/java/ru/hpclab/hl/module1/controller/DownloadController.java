@@ -1,5 +1,8 @@
 package ru.hpclab.hl.module1.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +47,17 @@ public class DownloadController {
     public ResponseEntity<Void> deleteDownload(@PathVariable String id) {
         downloadService.deleteDownload(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // Новый эндпоинт для очистки всех данных
+    @Operation(summary = "Clear all downloads")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "All downloads deleted"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @DeleteMapping("/clear")
+    public ResponseEntity<Void> clearAllDownloads() {
+        downloadService.clearAllDownloads();
+        return ResponseEntity.noContent().build();
     }
 }

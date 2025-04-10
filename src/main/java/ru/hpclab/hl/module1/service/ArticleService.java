@@ -30,4 +30,6 @@ public class ArticleService {
     public void deleteArticle(String id) {
         repository.deleteById(UUID.fromString(id));
     }
+
+    public void clearAllArticles(){ repository.deleteAll(); }
 }

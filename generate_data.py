@@ -1,106 +1,180 @@
-import os
-import psycopg2
-import uuid
-import random
-#import faker
+#!/usr/bin/env python3
+import argparse
+import requests
 from faker import Faker
 import random
-import uuid
+import sys
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
+import time
+import uuid
+import json
 
-# Подключение к базе данных PostgreSQL
-def connect_db():
+class DataGenerator:
+    def __init__(self, base_url):
+        self.fake = Faker()
+        self.base_url = base_url.rstrip('/')
 
-    return psycopg2.connect(
-        host=os.getenv('DB_HOST', 'localhost'),
-        port=os.getenv('DB_PORT', '5432'),
-        dbname=os.getenv('DB_NAME', 'articles'),
-        user=os.getenv('DB_USER', 'admin'),
-        password=os.getenv('DB_PASSWORD', 'secret')
-    )
+    def clear_data(self, endpoint):
+        """Очистка данных через эндпоинт /clear"""
+        try:
+            response = requests.delete(f"{self.base_url}/{endpoint}/clear")
+            response.raise_for_status()
+            print(f"Очищены данные для {endpoint}")
+        except Exception as e:
+            print(f"Ошибка очистки {endpoint}: {str(e)}")
+            sys.exit(1)
 
-#     return psycopg2.connect(
-#         dbname="articles", # Имя вашей базы данных
-#         user="admin",      # Имя пользователя
-#         password="secret", # Ваш пароль
-# #         host="host.docker.internal",  # Адрес хоста
-#         host="localhost",  # Адрес хоста
-#         port="5432"        # Порт PostgreSQL
-#     )
+    def generate_user(self):
+        """Генерация тестового пользователя"""
+        return {
+            "id": str(uuid.uuid4()),
+            "login": self.fake.unique.user_name(),
+            "university": self.fake.company(),
+            "subscription_end_date": self.fake.date_between(start_date='today', end_date='+1y').isoformat()
+        }
 
-# Функция для генерации случайных данных для таблицы t_user
-def generate_users(n):
-    fake = Faker()
-    users = []
-    for _ in range(n):
-        user_id = str(uuid.uuid4())
-        login = fake.user_name()
-        university = fake.company()
-        subscription_end_date = (datetime.now() + timedelta(days=random.randint(30, 365))).date()
-        users.append((user_id, login, university, subscription_end_date))
-    return users
+    def generate_article(self):
+        """Генерация тестовой статьи"""
+        return {
+            "id": str(uuid.uuid4()),
+            "doi": f"10.{self.fake.random_int(1000,9999)}/{self.fake.unique.uuid4()[:8]}",
+            "title": self.fake.sentence(nb_words=6),
+            "author": self.fake.name(),
+            "publication_year": self.fake.year()  # Обратите внимание, это поле будет преобразовано в publicationYear
+        }
 
-# Функция для генерации случайных данных для таблицы t_article
-def generate_articles(n):
-    fake = Faker()
-    articles = []
-    for _ in range(n):
-        article_id = str(uuid.uuid4())
-        doi = f"10.{random.randint(1000, 9999)}/{fake.uuid4()[:8]}"
-        title = fake.sentence(nb_words=6)
-        author = fake.name()
-        publication_year = random.randint(2000, 2024)
-        articles.append((article_id, doi, title, author, publication_year))
-    return articles
+    def generate_download(self, user_id, article_id):
+        """Генерация тестовой загрузки с правильной структурой"""
+        # Получаем полные данные пользователя и статьи
+        user = self._get_item_by_id("users", user_id)
+        article = self._get_item_by_id("articles", article_id)
 
-# Функция для генерации случайных данных для таблицы t_download
-def generate_downloads(users, articles, n):
-    downloads = []
-    formats = ["PDF", "HTML"]
-    for _ in range(n):
-        user_id = random.choice(users)[0]
-        article_id = random.choice(articles)[0]
-        download_date = datetime.now() - timedelta(days=random.randint(1, 30))
-        format_ = random.choice(formats)
-        downloads.append((str(uuid.uuid4()), user_id, article_id, download_date, format_))
-    return downloads
+        if not user or not article:
+            raise ValueError("User or article not found")
 
-# Основная функция для заполнения базы данных
-def populate_db():
-    conn = connect_db()
-    cursor = conn.cursor()
+        # Преобразуем publication_year в publicationYear и убедимся, что это int
+        article_data = {
+            "id": article["id"],
+            "doi": article["doi"],
+            "title": article["title"],
+            "author": article["author"],
+            "publicationYear": int(article["publication_year"]) if "publication_year" in article else 2023
+        }
 
-    # Генерируем данные
-    users = generate_users(10)
-    articles = generate_articles(20)
-    downloads = generate_downloads(users, articles, 50)
+        return {
+            "id": str(uuid.uuid4()),
+            "user": {
+                "id": user["id"],
+                "login": user["login"],
+                "university": user["university"],
+                "subscription_end_date": user["subscription_end_date"]
+            },
+            "article": article_data,
+            "downloadDate": self.fake.date_time_this_year().isoformat() + "Z",
+            "format": self.fake.random_element(elements=("PDF", "HTML"))
+        }
 
-    # Вставляем данные в таблицу t_user
-    for user in users:
-        cursor.execute("""
-            INSERT INTO t_user (id, login, university, subscription_end_date)
-            VALUES (%s, %s, %s, %s)
-        """, user)
+    def _get_item_by_id(self, endpoint, item_id):
+        """Получение полного объекта по ID"""
+        try:
+            response = requests.get(f"{self.base_url}/{endpoint}/{item_id}")
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            print(f"Ошибка при получении {endpoint} {item_id}: {str(e)}")
+            return None
 
-    # Вставляем данные в таблицу t_article
-    for article in articles:
-        cursor.execute("""
-            INSERT INTO t_article (id, doi, title, author, publication_year)
-            VALUES (%s, %s, %s, %s, %s)
-        """, article)
+    def post_data(self, endpoint, data):
+        """Отправка данных на сервер"""
+        try:
+            response = requests.post(
+                f"{self.base_url}/{endpoint}",
+                json=data,
+                headers={'Content-Type': 'application/json'}
+            )
+            response.raise_for_status()
+            return True
+        except Exception as e:
+            print(f"Ошибка при создании {endpoint}: {str(e)}")
+            return False
 
-    # Вставляем данные в таблицу t_download
-    for download in downloads:
-        cursor.execute("""
-            INSERT INTO t_download (id, user_id, article_id, download_date, format)
-            VALUES (%s, %s, %s, %s, %s)
-        """, download)
+    def generate_all(self, endpoint, count):
+        """Основной метод генерации данных"""
+        self.clear_data(endpoint)
+        
+        if endpoint == "users":
+            generator = self.generate_user
+        elif endpoint == "articles":
+            generator = self.generate_article
+        elif endpoint == "downloads":
+            # Для загрузок нужны существующие пользователи и статьи
+            users = self._get_existing_ids("users")
+            articles = self._get_existing_ids("articles")
+            if not users or not articles:
+                print("Сначала создайте пользователей и статьи!")
+                sys.exit(1)
+                
+            def download_generator():
+                return self.generate_download(
+                    self.fake.random_element(users),
+                    self.fake.random_element(articles)
+                )
+            generator = download_generator
+        else:
+            print(f"Неизвестный эндпоинт: {endpoint}")
+            sys.exit(1)
 
-    # Сохраняем изменения и закрываем соединение
-    conn.commit()
-    cursor.close()
-    conn.close()
+        # Многопоточная генерация данных
+        success = 0
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            results = executor.map(
+                lambda _: self.post_data(endpoint, generator()),
+                range(count)
+            )
+            success = sum(results)
+        
+        print(f"Успешно создано {success} из {count} записей для {endpoint}")
 
-# Запуск функции
+    def _get_existing_ids(self, endpoint):
+        """Получение ID существующих записей"""
+        try:
+            response = requests.get(f"{self.base_url}/{endpoint}")
+            response.raise_for_status()
+            return [item['id'] for item in response.json()]
+        except:
+            return []
+
+def main():
+    parser = argparse.ArgumentParser(description='Генератор тестовых данных для REST API')
+    parser.add_argument('--count', type=int, default=500, help='Количество создаваемых объектов')
+    parser.add_argument('--endpoint', required=True, choices=['users', 'articles', 'downloads'],
+                       help='API endpoint  для генерации данных')
+    parser.add_argument('--base-url', default='http://localhost:8080', help='Базовый URL API') # URL VM1(Server)
+    
+    args = parser.parse_args()
+    
+    generator = DataGenerator(args.base_url)
+    generator.generate_all(args.endpoint, args.count)
+
+#     try:
+#         start_time = time.time()
+#
+#         if args.endpoint == 'users':
+#             print(f"Generating {args.count} users...")
+#             generator.generate_user(args.count)
+#         elif args.endpoint == 'articles':
+#             print(f"Generating {args.count} articles...")
+#             generator.generate_article(args.count)
+#         elif args.endpoint == 'downloads':
+#             print(f"Generating {args.count} downloads...")
+#             generator.generate_download(args.count)
+#
+#         elapsed = time.time() - start_time
+#         print(f"Operation completed in {elapsed:.2f} seconds")
+#     except Exception as e:
+#         print(f"Fatal error: {str(e)}")
+
+
 if __name__ == "__main__":
-    populate_db()
+    main()

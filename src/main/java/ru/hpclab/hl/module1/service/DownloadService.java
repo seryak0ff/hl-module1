@@ -30,4 +30,6 @@ public class DownloadService {
     public void deleteDownload(String id) {
         repository.deleteById(UUID.fromString(id));
     }
+
+    public void clearAllDownloads(){ repository.deleteAll(); }
 }
