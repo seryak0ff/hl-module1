@@ -40,17 +40,22 @@ services:
   app:
     build: .
     container_name: spring-boot-app
-    depends_on:
-#      - postgres
-      postgres:
-        condition: service_healthy
-#
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5" # Max CPU - для тестов: 0.5, 1.0, 1.5, 2.0
+          memory: 1G  # Max RAM
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/articles
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/articles       # Работа приложения в докере
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: secret
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SERVER_TOMCAT_MAX_THREADS: 200        # Количество потоков
+      SPRING_JPA_SHOW_SQL: false            # Отключаем SQL-логи Hibernate
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "8080:8080"
     networks:
