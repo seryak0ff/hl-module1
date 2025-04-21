@@ -62,6 +62,10 @@ class DataGenerator:
             "publicationYear": int(article["publication_year"]) if "publication_year" in article else 2023
         }
 
+        # Задаем временной период
+        start_data = datetime(2025, 1, 1)
+        end_data = datetime(2025, 12, 31)
+
         return {
             "id": str(uuid.uuid4()),
             "user": {
@@ -71,7 +75,9 @@ class DataGenerator:
                 "subscription_end_date": user["subscription_end_date"]
             },
             "article": article_data,
-            "downloadDate": self.fake.date_time_this_year().isoformat() + "Z",
+
+            "downloadDate": self.fake.date_time_between(start_data, end_data).isoformat() + "Z",
+#             "downloadDate": self.fake.date_time_this_year().isoformat() + "Z", # генерит дату с 1 января до текущей даты
             "format": self.fake.random_element(elements=("PDF", "HTML"))
         }
 
@@ -156,25 +162,6 @@ def main():
     
     generator = DataGenerator(args.base_url)
     generator.generate_all(args.endpoint, args.count)
-
-#     try:
-#         start_time = time.time()
-#
-#         if args.endpoint == 'users':
-#             print(f"Generating {args.count} users...")
-#             generator.generate_user(args.count)
-#         elif args.endpoint == 'articles':
-#             print(f"Generating {args.count} articles...")
-#             generator.generate_article(args.count)
-#         elif args.endpoint == 'downloads':
-#             print(f"Generating {args.count} downloads...")
-#             generator.generate_download(args.count)
-#
-#         elapsed = time.time() - start_time
-#         print(f"Operation completed in {elapsed:.2f} seconds")
-#     except Exception as e:
-#         print(f"Fatal error: {str(e)}")
-
 
 if __name__ == "__main__":
     main()
