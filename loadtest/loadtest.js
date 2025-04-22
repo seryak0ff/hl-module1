@@ -35,7 +35,16 @@ export const options = {
 
 // Генератор тестовых данных
 function generateUsers() {
-  const universities = ['Harvard', 'Stanford', 'MIT', 'Oxford'];
+const universities = ["Lomonosov Moscow State University",
+                      "Saint Petersburg State University",
+                      "Novosibirsk State University",
+                      "Tomsk State University",
+                      "Higher School of Economics",
+                      "Bauman Moscow State Technical University",
+                      "Moscow Institute of Physics and Technology",
+                      "Ural Federal University",
+                      "Kazan Federal University",
+                      "ITMO University"];
   
   // Генерация уникального логина без шаблонных строк
   const uniqueLogin = 'user_' + __VU + '_' + __ITER + '_' + new Date().getTime();

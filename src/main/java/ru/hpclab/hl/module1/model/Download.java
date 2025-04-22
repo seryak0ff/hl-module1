@@ -19,13 +19,17 @@ public class Download {
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+//    @ManyToOne
+//    @JoinColumn(name = "user_id", nullable = false)
+//    private User user;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;  // Теперь храним ID пользователя
 
-    @ManyToOne
-    @JoinColumn(name = "article_id", nullable = false)
-    private Article article;
+//    @ManyToOne
+//    @JoinColumn(name = "article_id", nullable = false)
+//    private Article article;
+    @Column(name = "article_id", nullable = false)
+    private UUID articleId;  // Теперь храним ID статьи
 
     @Column(name = "download_date", nullable = false)
     private LocalDateTime downloadDate;

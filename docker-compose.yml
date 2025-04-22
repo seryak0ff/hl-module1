@@ -40,11 +40,11 @@ services:
   app:
     build: .
     container_name: spring-boot-app
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5" # Max CPU - для тестов: 0.5, 1.0, 1.5, 2.0
-          memory: 1G  # Max RAM
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "0.5" # Max CPU - для тестов: 0.5, 1.0, 1.5, 2.0
+#          memory: 1G  # Max RAM
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/articles
       SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/articles       # Работа приложения в докере

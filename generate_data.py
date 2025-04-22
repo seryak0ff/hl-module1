@@ -30,7 +30,18 @@ class DataGenerator:
         return {
             "id": str(uuid.uuid4()),
             "login": self.fake.unique.user_name(),
-            "university": self.fake.company(),
+            "university": random.choice([
+                "Lomonosov Moscow State University",
+                "Saint Petersburg State University",
+                "Novosibirsk State University",
+                "Tomsk State University",
+                "Higher School of Economics",
+                "Bauman Moscow State Technical University",
+                "Moscow Institute of Physics and Technology",
+                "Ural Federal University",
+                "Kazan Federal University",
+                "ITMO University"
+            ]),
             "subscription_end_date": self.fake.date_between(start_date='today', end_date='+1y').isoformat()
         }
 
@@ -45,41 +56,55 @@ class DataGenerator:
         }
 
     def generate_download(self, user_id, article_id):
-        """Генерация тестовой загрузки с правильной структурой"""
-        # Получаем полные данные пользователя и статьи
-        user = self._get_item_by_id("users", user_id)
-        article = self._get_item_by_id("articles", article_id)
-
-        if not user or not article:
-            raise ValueError("User or article not found")
-
-        # Преобразуем publication_year в publicationYear и убедимся, что это int
-        article_data = {
-            "id": article["id"],
-            "doi": article["doi"],
-            "title": article["title"],
-            "author": article["author"],
-            "publicationYear": int(article["publication_year"]) if "publication_year" in article else 2023
-        }
-
-        # Задаем временной период
-        start_data = datetime(2025, 1, 1)
-        end_data = datetime(2025, 12, 31)
+        """Генерация тестовой загрузки с новой структурой (только ID пользователя и статьи)"""
+        # Задаем временной период для генерации дат
+        start_date = datetime(2025, 1, 1)
+        end_date = datetime(2025, 12, 31)
 
         return {
             "id": str(uuid.uuid4()),
-            "user": {
-                "id": user["id"],
-                "login": user["login"],
-                "university": user["university"],
-                "subscription_end_date": user["subscription_end_date"]
-            },
-            "article": article_data,
-
-            "downloadDate": self.fake.date_time_between(start_data, end_data).isoformat() + "Z",
-#             "downloadDate": self.fake.date_time_this_year().isoformat() + "Z", # генерит дату с 1 января до текущей даты
-            "format": self.fake.random_element(elements=("PDF", "HTML"))
+            "userId": user_id,
+            "articleId": article_id,
+            "downloadDate": self.fake.date_time_between(start_date, end_date).isoformat() + "Z",
+            "format": random.choice(["PDF", "HTML"])
         }
+
+#     def generate_download(self, user_id, article_id):
+#         """Генерация тестовой загрузки с правильной структурой"""
+#         # Получаем полные данные пользователя и статьи
+#         user = self._get_item_by_id("users", user_id)
+#         article = self._get_item_by_id("articles", article_id)
+#
+#         if not user or not article:
+#             raise ValueError("User or article not found")
+#
+#         # Преобразуем publication_year в publicationYear и убедимся, что это int
+#         article_data = {
+#             "id": article["id"],
+#             "doi": article["doi"],
+#             "title": article["title"],
+#             "author": article["author"],
+#             "publicationYear": int(article["publication_year"]) if "publication_year" in article else 2023
+#         }
+#
+#         # Задаем временной период
+#         start_data = datetime(2025, 1, 1)
+#         end_data = datetime(2025, 12, 31)
+#
+#         return {
+#             "id": str(uuid.uuid4()),
+#             "user": {
+#                 "id": user["id"],
+#                 "login": user["login"],
+#                 "university": user["university"],
+#                 "subscription_end_date": user["subscription_end_date"]
+#             },
+#             "article": article_data,
+#
+#             "downloadDate": self.fake.date_time_between(start_data, end_data).isoformat() + "Z",
+# #             "downloadDate": self.fake.date_time_this_year().isoformat() + "Z", # генерит дату с 1 января до текущей даты
+#             "format": self.fake.random_element(elements=("PDF", "HTML"))
+#         }
 
     def _get_item_by_id(self, endpoint, item_id):
         """Получение полного объекта по ID"""
@@ -90,6 +115,15 @@ class DataGenerator:
         except Exception as e:
             print(f"Ошибка при получении {endpoint} {item_id}: {str(e)}")
             return None
+
+    def _get_existing_ids(self, endpoint):
+        """Получение ID существующих записей"""
+        try:
+            response = requests.get(f"{self.base_url}/{endpoint}")
+            response.raise_for_status()
+            return [item['id'] for item in response.json()]
+        except:
+            return []
 
     def post_data(self, endpoint, data):
         """Отправка данных на сервер"""
@@ -120,12 +154,16 @@ class DataGenerator:
             if not users or not articles:
                 print("Сначала создайте пользователей и статьи!")
                 sys.exit(1)
-                
             def download_generator():
                 return self.generate_download(
-                    self.fake.random_element(users),
-                    self.fake.random_element(articles)
+                    random.choice(users),
+                    random.choice(articles)
                 )
+#             def download_generator():
+#                 return self.generate_download(
+#                     self.fake.random_element(users),
+#                     self.fake.random_element(articles)
+#                 )
             generator = download_generator
         else:
             print(f"Неизвестный эндпоинт: {endpoint}")
@@ -141,15 +179,6 @@ class DataGenerator:
             success = sum(results)
         
         print(f"Успешно создано {success} из {count} записей для {endpoint}")
-
-    def _get_existing_ids(self, endpoint):
-        """Получение ID существующих записей"""
-        try:
-            response = requests.get(f"{self.base_url}/{endpoint}")
-            response.raise_for_status()
-            return [item['id'] for item in response.json()]
-        except:
-            return []
 
 def main():
     parser = argparse.ArgumentParser(description='Генератор тестовых данных для REST API')

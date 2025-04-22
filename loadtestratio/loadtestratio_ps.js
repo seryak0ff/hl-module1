@@ -15,7 +15,16 @@ export const options = {
   duration: '60s',     // длительность теста
 };
 
-const universities = ['MIT', 'Stanford', 'Harvard', 'Oxford', 'Cambridge'];
+const universities = ["Lomonosov Moscow State University",
+                      "Saint Petersburg State University",
+                      "Novosibirsk State University",
+                      "Tomsk State University",
+                      "Higher School of Economics",
+                      "Bauman Moscow State Technical University",
+                      "Moscow Institute of Physics and Technology",
+                      "Ural Federal University",
+                      "Kazan Federal University",
+                      "ITMO University"];
 
 export default function () {
   const chance = Math.random();

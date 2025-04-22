@@ -16,10 +16,18 @@ public class DownloadActivityController {
         this.downloadActivityService = downloadActivityService;
     }
 
-    // Получение статистики скачиваний по месяцам и форматам
+    // Получение статистики скачиваний по месяцам университетам и форматам
     @GetMapping
-    public ResponseEntity<Map<String, Map<String, Long>>> getMonthlyDownloadStatistics() {
-        Map<String, Map<String, Long>> statistics = downloadActivityService.getMonthlyDownloadStatistics();
+    public ResponseEntity<Map<String, Map<String, Map<String, Long>>>> getUniversityDownloadStatistics() {
+        Map<String, Map<String, Map<String, Long>>> statistics =
+                downloadActivityService.getUniversityDownloadStatistics();
         return new ResponseEntity<>(statistics, HttpStatus.OK);
     }
+
+    // Получение статистики скачиваний по месяцам и форматам
+//    @GetMapping
+//    public ResponseEntity<Map<String, Map<String, Long>>> getMonthlyDownloadStatistics() {
+//        Map<String, Map<String, Long>> statistics = downloadActivityService.getMonthlyDownloadStatistics();
+//        return new ResponseEntity<>(statistics, HttpStatus.OK);
+//    }
 }
