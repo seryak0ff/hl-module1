@@ -69,43 +69,6 @@ class DataGenerator:
             "format": random.choice(["PDF", "HTML"])
         }
 
-#     def generate_download(self, user_id, article_id):
-#         """Генерация тестовой загрузки с правильной структурой"""
-#         # Получаем полные данные пользователя и статьи
-#         user = self._get_item_by_id("users", user_id)
-#         article = self._get_item_by_id("articles", article_id)
-#
-#         if not user or not article:
-#             raise ValueError("User or article not found")
-#
-#         # Преобразуем publication_year в publicationYear и убедимся, что это int
-#         article_data = {
-#             "id": article["id"],
-#             "doi": article["doi"],
-#             "title": article["title"],
-#             "author": article["author"],
-#             "publicationYear": int(article["publication_year"]) if "publication_year" in article else 2023
-#         }
-#
-#         # Задаем временной период
-#         start_data = datetime(2025, 1, 1)
-#         end_data = datetime(2025, 12, 31)
-#
-#         return {
-#             "id": str(uuid.uuid4()),
-#             "user": {
-#                 "id": user["id"],
-#                 "login": user["login"],
-#                 "university": user["university"],
-#                 "subscription_end_date": user["subscription_end_date"]
-#             },
-#             "article": article_data,
-#
-#             "downloadDate": self.fake.date_time_between(start_data, end_data).isoformat() + "Z",
-# #             "downloadDate": self.fake.date_time_this_year().isoformat() + "Z", # генерит дату с 1 января до текущей даты
-#             "format": self.fake.random_element(elements=("PDF", "HTML"))
-#         }
-
     def _get_item_by_id(self, endpoint, item_id):
         """Получение полного объекта по ID"""
         try:
@@ -159,11 +122,6 @@ class DataGenerator:
                     random.choice(users),
                     random.choice(articles)
                 )
-#             def download_generator():
-#                 return self.generate_download(
-#                     self.fake.random_element(users),
-#                     self.fake.random_element(articles)
-#                 )
             generator = download_generator
         else:
             print(f"Неизвестный эндпоинт: {endpoint}")
