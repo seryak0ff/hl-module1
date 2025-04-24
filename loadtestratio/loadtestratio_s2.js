@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check } from 'k6';
 
 // Получаем вероятность POST-запросов из переменной окружения (по умолчанию 0.5)
-const postProbability = parseFloat(__ENV.POST_PROBABILITY) || 0.5;
+const postProbability = parseFloat(__ENV.POST_PROBABILITY)  0.5;
 
 // Генератор UUID для K6 (аналог Python uuid)
 function generateUUID() {
@@ -47,7 +47,7 @@ export default function () {
     const res = http.post('http://192.168.1.50:8080/users', payload, { headers });
 
     check(res, {
-      'user created': (r) => r.status === 200 || r.status === 201,
+      'user created': (r) => r.status === 200  r.status === 201,
     });
 
   } else {

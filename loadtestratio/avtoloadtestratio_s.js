@@ -29,34 +29,94 @@ const universities = [
   "ITMO University"
 ];
 
-// Конфигурации тестов
-const testConfigs = [
-  { cpu: 0.5, writeRatio: 0.05, name: "0.5 CPU, 5/95" },
-  { cpu: 0.5, writeRatio: 0.50, name: "0.5 CPU, 50/50" },
-  { cpu: 0.5, writeRatio: 0.95, name: "0.5 CPU, 95/5" },
-  { cpu: 1.0, writeRatio: 0.05, name: "1.0 CPU, 5/95" },
-  { cpu: 1.0, writeRatio: 0.50, name: "1.0 CPU, 50/50" },
-  { cpu: 1.0, writeRatio: 0.95, name: "1.0 CPU, 95/5" },
-  { cpu: 1.5, writeRatio: 0.05, name: "1.5 CPU, 5/95" },
-  { cpu: 1.5, writeRatio: 0.50, name: "1.5 CPU, 50/50" },
-  { cpu: 1.5, writeRatio: 0.95, name: "1.5 CPU, 95/5" },
-  { cpu: 2.0, writeRatio: 0.05, name: "2.0 CPU, 5/95" },
-  { cpu: 2.0, writeRatio: 0.50, name: "2.0 CPU, 50/50" },
-  { cpu: 2.0, writeRatio: 0.95, name: "2.0 CPU, 95/5" }
-];
-
 // Базовые настройки для всех тестов
 export const options = {
-  scenarios: testConfigs.map(config => ({
-    name: config.name,
-    exec: 'default',
-    vus: 150,
-    duration: '60s',
-    env: {
-      WRITE_RATIO: config.writeRatio.toString(),
-      CPU_LIMIT: config.cpu.toString()
+  scenarios: {
+    "cpu_0_5_ratio_5_95": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '0s',
+      env: { WRITE_RATIO: '0.05', CPU_LIMIT: '0.5' }
+    },
+    "cpu_0_5_ratio_50_50": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '70s',
+      env: { WRITE_RATIO: '0.50', CPU_LIMIT: '0.5' }
+    },
+    "cpu_0_5_ratio_95_5": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '140s',
+      env: { WRITE_RATIO: '0.95', CPU_LIMIT: '0.5' }
+    },
+    "cpu_1_0_ratio_5_95": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '210s',
+      env: { WRITE_RATIO: '0.05', CPU_LIMIT: '1.0' }
+    },
+    "cpu_1_0_ratio_50_50": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '280s',
+      env: { WRITE_RATIO: '0.50', CPU_LIMIT: '1.0' }
+    },
+    "cpu_1_0_ratio_95_5": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '350s',
+      env: { WRITE_RATIO: '0.95', CPU_LIMIT: '1.0' }
+    },
+    "cpu_1_5_ratio_5_95": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '420s',
+      env: { WRITE_RATIO: '0.05', CPU_LIMIT: '1.5' }
+    },
+    "cpu_1_5_ratio_50_50": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '490s',
+      env: { WRITE_RATIO: '0.50', CPU_LIMIT: '1.5' }
+    },
+    "cpu_1_5_ratio_95_5": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '560s',
+      env: { WRITE_RATIO: '0.95', CPU_LIMIT: '1.5' }
+    },
+    "cpu_2_0_ratio_5_95": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '630s',
+      env: { WRITE_RATIO: '0.05', CPU_LIMIT: '2.0' }
+    },
+    "cpu_2_0_ratio_50_50": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '700s',
+      env: { WRITE_RATIO: '0.50', CPU_LIMIT: '2.0' }
+    },
+    "cpu_2_0_ratio_95_5": {
+      executor: 'constant-vus',
+      vus: 150,
+      duration: '60s',
+      startTime: '770s',
+      env: { WRITE_RATIO: '0.95', CPU_LIMIT: '2.0' }
     }
-  }))
+  }
 };
 
 export default function () {

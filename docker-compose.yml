@@ -1,42 +1,42 @@
 #version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15
-    container_name: articles-db
-    restart: always
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8"  # Для обеспечения правильной кодировки
-    ports:
-      - "5432:5432"
-    volumes:
-      - articles_data:/var/lib/postgresql/data
-      - ./src/main/resources/db/migration:/docker-entrypoint-initdb.d  # Подключаем папку с миграциями
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    networks:
-      - app-network
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres
-    networks:
-      - app-network
-
+#  postgres:
+#    image: postgres:15
+#    container_name: articles-db
+#    restart: always
+#    environment:
+#      POSTGRES_DB: ${POSTGRES_DB}
+#      POSTGRES_USER: ${POSTGRES_USER}
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#      POSTGRES_INITDB_ARGS: "--encoding=UTF8"  # Для обеспечения правильной кодировки
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - articles_data:/var/lib/postgresql/data
+#      - ./src/main/resources/db/migration:/docker-entrypoint-initdb.d  # Подключаем папку с миграциями
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 10
+#    networks:
+#      - app-network
+#
+#  pgadmin:
+#    image: dpage/pgadmin4
+#    container_name: pgadmin
+#    restart: always
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+#      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+#    ports:
+#      - "5050:80"
+#    depends_on:
+#      - postgres
+#    networks:
+#      - app-network
+#
   app:
     build: .
     container_name: spring-boot-app
@@ -58,12 +58,12 @@ services:
         condition: service_healthy
     ports:
       - "8080:8080"
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  articles_data:
+#    networks:
+#      - app-network
+#
+#networks:
+#  app-network:
+#    driver: bridge
+#
+#volumes:
+#  articles_data:
