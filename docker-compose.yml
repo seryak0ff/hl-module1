@@ -1,50 +1,48 @@
-#version: '3.8'
-
 services:
-#  postgres:
-#    image: postgres:15
-#    container_name: articles-db
-#    restart: always
-#    environment:
-#      POSTGRES_DB: ${POSTGRES_DB}
-#      POSTGRES_USER: ${POSTGRES_USER}
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_INITDB_ARGS: "--encoding=UTF8"  # Для обеспечения правильной кодировки
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - articles_data:/var/lib/postgresql/data
-#      - ./src/main/resources/db/migration:/docker-entrypoint-initdb.d  # Подключаем папку с миграциями
-#    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
-#      interval: 5s
-#      timeout: 5s
-#      retries: 10
-#    networks:
-#      - app-network
-#
-#  pgadmin:
-#    image: dpage/pgadmin4
-#    container_name: pgadmin
-#    restart: always
-#    environment:
-#      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-#      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-#    ports:
-#      - "5050:80"
-#    depends_on:
-#      - postgres
-#    networks:
-#      - app-network
-#
-  app:
+  postgres:
+    image: postgres:15
+    container_name: articles-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"  # Для обеспечения правильной кодировки
+    ports:
+      - "5432:5432"
+    volumes:
+      - articles_data:/var/lib/postgresql/data
+      - ./src/main/resources/db/migration:/docker-entrypoint-initdb.d  # Подключаем папку с миграциями
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  main-service:
     build: .
     container_name: spring-boot-app
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "0.5" # Max CPU - для тестов: 0.5, 1.0, 1.5, 2.0
-#          memory: 1G  # Max RAM
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
       SPRING_FLYWAY_URL: ${SPRING_FLYWAY_URL}
@@ -58,12 +56,29 @@ services:
         condition: service_healthy
     ports:
       - "8080:8080"
-#    networks:
-#      - app-network
-#
-#networks:
-#  app-network:
-#    driver: bridge
-#
-#volumes:
-#  articles_data:
+    networks:
+      - app-network
+
+  analytics-service:
+    build: ../analytics-service
+    container_name: analytics-service
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    environment:
+      MAIN_SERVICE_URL: http://main-service:8080
+    ports:
+      - "8081:8081"
+    depends_on:
+      - main-service
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  articles_data:

@@ -140,6 +140,9 @@ export default function () {
       'user created': (r) => r.status === 200 || r.status === 201,
     }) || errorRate.add(1);
 
+    // Добавляем задержку после POST запроса
+    sleep(1);
+
   } else {
     // GET /download-activity
     const res = http.get('http://192.168.1.50:8080/download-activity');
@@ -147,6 +150,9 @@ export default function () {
     check(res, {
       'download activity retrieved': (r) => r.status === 200,
     }) || errorRate.add(1);
+
+    // Добавляем меньшую задержку после GET запроса
+    sleep(0.1);
   }
 }
 
