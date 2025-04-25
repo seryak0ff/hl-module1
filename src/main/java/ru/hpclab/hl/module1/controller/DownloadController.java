@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.hpclab.hl.module1.model.Download;
 import ru.hpclab.hl.module1.service.DownloadService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/downloads")
@@ -61,17 +59,5 @@ public class DownloadController {
     public ResponseEntity<Void> clearAllDownloads() {
         downloadService.clearAllDownloads();
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/download-activity")
-    @Operation(summary = "Get download activity statistics", description = "Returns download statistics grouped by month, university and format")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved download statistics"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
-    public ResponseEntity<Map<String, Object>> getDownloadActivity() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("data", downloadService.getDownloadActivity());
-        return ResponseEntity.ok(response);
     }
 }

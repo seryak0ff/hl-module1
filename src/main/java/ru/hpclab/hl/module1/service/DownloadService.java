@@ -6,8 +6,8 @@ import ru.hpclab.hl.module1.model.User;
 import ru.hpclab.hl.module1.repository.DownloadRepository;
 import ru.hpclab.hl.module1.repository.UserRepository;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class DownloadService {
@@ -37,23 +37,5 @@ public class DownloadService {
 
     public void clearAllDownloads() {
         repository.deleteAll();
-    }
-
-    public Map<String, Map<String, Map<String, Long>>> getDownloadActivity() {
-        List<Download> downloads = repository.findAll();
-        Map<String, Map<String, Map<String, Long>>> result = new TreeMap<>();
-
-        for (Download download : downloads) {
-            String monthName = download.getDownloadDate().getMonth().name();
-            User user = userRepository.findById(download.getUserId()).orElse(null);
-            String university = user != null ? user.getUniversity() : "Unknown";
-            String format = download.getFormat().name();
-
-            result.computeIfAbsent(monthName, k -> new HashMap<>())
-                    .computeIfAbsent(university, k -> new HashMap<>())
-                    .merge(format, 1L, Long::sum);
-        }
-
-        return result;
     }
 }
