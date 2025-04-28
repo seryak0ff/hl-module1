@@ -3,6 +3,7 @@ package ru.hpclab.hl.module1.service;
 import org.springframework.stereotype.Service;
 import ru.hpclab.hl.module1.model.User;
 import ru.hpclab.hl.module1.repository.UserRepository;
+import ru.hpclab.hl.module1.service.statistics.ObservabilityService;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,21 +12,44 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository repository;
 
-    public UserService(UserRepository repository) {
+    private final ObservabilityService observabilityService;
+
+    public UserService(ObservabilityService observabilityService, UserRepository repository) {
+        this.observabilityService = observabilityService;
         this.repository = repository;
     }
 
-    public User addUser(User user) { return repository.save(user); }
+    public User addUser(User user) {
+        this.observabilityService.start(getClass().getSimpleName() + ":addUser");
+        User temp = repository.save(user);
+        this.observabilityService.stop(getClass().getSimpleName() + ":addUser");
+        return  temp;
+    }
 
     public User getUser(String id) {
-        return repository.findById(UUID.fromString(id)).orElse(null);
+        this.observabilityService.start(getClass().getSimpleName() + ":getUser");
+        User temp = repository.findById(UUID.fromString(id)).orElse(null);
+        this.observabilityService.stop(getClass().getSimpleName() + ":getUser");
+        return temp;
+
     }
 
-    public List<User> getAllUsers() { return repository.findAll(); }
+    public List<User> getAllUsers() {
+        this.observabilityService.start(getClass().getSimpleName() + ":getAllUsers");
+        List<User> temp = repository.findAll();
+        this.observabilityService.stop(getClass().getSimpleName() + ":getAllUsers");
+        return temp;
+    }
 
     public void deleteUser(String id) {
+        this.observabilityService.start(getClass().getSimpleName() + ":deleteUser");
         repository.deleteById(UUID.fromString(id));
+        this.observabilityService.stop(getClass().getSimpleName() + ":deleteUser");
     }
 
-    public void clearAllUsers(){ repository.deleteAll(); }
+    public void clearAllUsers(){
+        this.observabilityService.start(getClass().getSimpleName() + ":clearAllUsers");
+        repository.deleteAll();
+        this.observabilityService.stop(getClass().getSimpleName() + ":clearAllUsers");
+    }
 }

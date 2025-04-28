@@ -5,6 +5,8 @@ import ru.hpclab.hl.module1.model.Download;
 import ru.hpclab.hl.module1.model.User;
 import ru.hpclab.hl.module1.repository.DownloadRepository;
 import ru.hpclab.hl.module1.repository.UserRepository;
+import ru.hpclab.hl.module1.service.statistics.ObservabilityService;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -13,29 +15,45 @@ import java.util.UUID;
 public class DownloadService {
     private final DownloadRepository repository;
     private final UserRepository userRepository;
+    private final ObservabilityService observabilityService;
 
-    public DownloadService(DownloadRepository repository, UserRepository userRepository) {
+
+    public DownloadService(ObservabilityService observabilityService, DownloadRepository repository, UserRepository userRepository) {
+        this.observabilityService = observabilityService;
         this.repository = repository;
         this.userRepository = userRepository;
     }
 
     public Download addDownload(Download download) {
-        return repository.save(download);
+        this.observabilityService.start(getClass().getSimpleName() + ":addDownload");
+        Download temp = repository.save(download);
+        this.observabilityService.stop(getClass().getSimpleName() + ":addDownload");
+        return temp;
     }
 
     public Download getDownload(String id) {
-        return repository.findById(UUID.fromString(id)).orElse(null);
+        this.observabilityService.start(getClass().getSimpleName() + ":getDownload");
+        Download temp = repository.findById(UUID.fromString(id)).orElse(null);
+        this.observabilityService.stop(getClass().getSimpleName() + ":getDownload");
+        return temp;
     }
 
     public List<Download> getAllDownloads() {
-        return repository.findAll();
+        this.observabilityService.start(getClass().getSimpleName() + ":getAllDownloads");
+        List<Download> temp = repository.findAll();
+        this.observabilityService.stop(getClass().getSimpleName() + ":getAllDownloads");
+        return temp;
     }
 
     public void deleteDownload(String id) {
+        this.observabilityService.start(getClass().getSimpleName() + ":deleteDownload");
         repository.deleteById(UUID.fromString(id));
+        this.observabilityService.stop(getClass().getSimpleName() + ":deleteDownload");
     }
 
     public void clearAllDownloads() {
+        this.observabilityService.start(getClass().getSimpleName() + ":clearAllDownloads");
         repository.deleteAll();
+        this.observabilityService.stop(getClass().getSimpleName() + ":clearAllDownloads");
     }
 }

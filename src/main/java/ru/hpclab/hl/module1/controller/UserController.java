@@ -9,40 +9,55 @@ import org.springframework.web.bind.annotation.*;
 import ru.hpclab.hl.module1.model.User;
 import ru.hpclab.hl.module1.service.UserService;
 import java.util.List;
+import ru.hpclab.hl.module1.service.statistics.ObservabilityService;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final ObservabilityService observabilityService;
 
-    public UserController(UserService userService) {
+    public UserController(ObservabilityService observabilityService, UserService userService) {
+        this.observabilityService = observabilityService;
         this.userService = userService;
     }
 
     // Добавление нового пользователя
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.ok(userService.addUser(user));
+        this.observabilityService.start(getClass().getSimpleName() + ":createUser - Controller");
+        ResponseEntity<User> temp = ResponseEntity.ok(userService.addUser(user));
+        this.observabilityService.stop(getClass().getSimpleName() + ":createUser - Controller");
+        return temp;
     }
 
     // Получение пользователя по ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable String id) {
+        this.observabilityService.start(getClass().getSimpleName() + ":getUser - Controller");
         User user = userService.getUser(id);
-        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
+        ResponseEntity<User> temp = user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
+        this.observabilityService.stop(getClass().getSimpleName() + ":getUser - Controller");
+        return temp;
     }
 
     // Получение всех пользователей
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+        this.observabilityService.start(getClass().getSimpleName() + ":getAllUsers - Controller");
+        ResponseEntity<List<User>> temp = ResponseEntity.ok(userService.getAllUsers());
+        this.observabilityService.stop(getClass().getSimpleName() + ":getAllUsers - Controller");
+        return temp;
     }
 
     // Удаление пользователя по ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+        this.observabilityService.start(getClass().getSimpleName() + ":deleteUser - Controller");
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        ResponseEntity<Void> temp = ResponseEntity.noContent().build();
+        this.observabilityService.stop(getClass().getSimpleName() + ":deleteUser - Controller");
+        return temp;
     }
 
     // Новый эндпоинт для очистки всех данных
@@ -54,7 +69,10 @@ public class UserController {
 
     @DeleteMapping("/clear")
     public ResponseEntity<Void> clearAllUsers() {
+        this.observabilityService.start(getClass().getSimpleName() + ":clearAllUsers - Controller");
         userService.clearAllUsers();
-        return ResponseEntity.noContent().build();
+        ResponseEntity<Void> temp = ResponseEntity.noContent().build();
+        this.observabilityService.stop(getClass().getSimpleName() + ":clearAllUsers - Controller");
+        return temp;
     }
 }

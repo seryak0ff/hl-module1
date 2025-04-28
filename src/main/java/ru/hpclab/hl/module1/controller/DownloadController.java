@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hpclab.hl.module1.model.Download;
 import ru.hpclab.hl.module1.service.DownloadService;
+import ru.hpclab.hl.module1.service.statistics.ObservabilityService;
 
 import java.util.List;
 
@@ -15,38 +16,52 @@ import java.util.List;
 @RequestMapping("/downloads")
 public class DownloadController {
     private final DownloadService downloadService;
+    private final ObservabilityService observabilityService;
 
-    public DownloadController(DownloadService downloadService) {
+    public DownloadController(ObservabilityService observabilityService, DownloadService downloadService) {
+        this.observabilityService = observabilityService;
         this.downloadService = downloadService;
     }
 
     // Добавление нового скачивания
     @PostMapping
     public ResponseEntity<Download> addDownload(@RequestBody Download download) {
+        this.observabilityService.start(getClass().getSimpleName() + ":addDownload - Controller");
         Download savedDownload = downloadService.addDownload(download);
-        return new ResponseEntity<>(savedDownload, HttpStatus.CREATED);
+        ResponseEntity<Download> temp = new ResponseEntity<>(savedDownload, HttpStatus.CREATED);
+        this.observabilityService.stop(getClass().getSimpleName() + ":addDownload - Controller");
+        return temp;
     }
 
     // Получение скачивания по ID
     @GetMapping("/{id}")
     public ResponseEntity<Download> getDownload(@PathVariable String id) {
+        this.observabilityService.start(getClass().getSimpleName() + ":getDownload - Controller");
         Download download = downloadService.getDownload(id);
-        return download != null ? new ResponseEntity<>(download, HttpStatus.OK) :
+        ResponseEntity<Download> temp = download != null ? new ResponseEntity<>(download, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        this.observabilityService.stop(getClass().getSimpleName() + ":getDownload - Controller");
+        return temp;
     }
 
     // Получение всех скачиваний
     @GetMapping
     public ResponseEntity<List<Download>> getAllDownloads() {
+        this.observabilityService.start(getClass().getSimpleName() + ":getAllDownloads - Controller");
         List<Download> downloads = downloadService.getAllDownloads();
-        return new ResponseEntity<>(downloads, HttpStatus.OK);
+        ResponseEntity<List<Download>> temp = new ResponseEntity<>(downloads, HttpStatus.OK);
+        this.observabilityService.stop(getClass().getSimpleName() + ":getAllDownloads - Controller");
+        return temp;
     }
 
     // Удаление скачивания по ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDownload(@PathVariable String id) {
+        this.observabilityService.start(getClass().getSimpleName() + ":deleteDownload - Controller");
         downloadService.deleteDownload(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        ResponseEntity<Void> temp = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        this.observabilityService.stop(getClass().getSimpleName() + ":deleteDownload - Controller");
+        return temp;
     }
 
     // Новый эндпоинт для очистки всех данных
@@ -57,7 +72,10 @@ public class DownloadController {
     })
     @DeleteMapping("/clear")
     public ResponseEntity<Void> clearAllDownloads() {
+        this.observabilityService.start(getClass().getSimpleName() + ":deleteDownload - Controller");
         downloadService.clearAllDownloads();
-        return ResponseEntity.noContent().build();
+        ResponseEntity<Void> temp = ResponseEntity.noContent().build();
+        this.observabilityService.stop(getClass().getSimpleName() + ":deleteDownload - Controller");
+        return temp;
     }
 }
