@@ -1,7 +1,7 @@
-package ru.hpclab.hl.module1.repository;
+package ru.hpclab.hl.module1.apimodule.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.hpclab.hl.module1.model.Download;
+import ru.hpclab.hl.module1.apimodule.model.Download;
 
 import java.util.UUID;
 

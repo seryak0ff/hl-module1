@@ -1,15 +1,14 @@
-package ru.hpclab.hl.module1.controller;
+package ru.hpclab.hl.module1.apimodule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.hpclab.hl.module1.model.User;
-import ru.hpclab.hl.module1.service.UserService;
+import ru.hpclab.hl.module1.apimodule.model.User;
+import ru.hpclab.hl.module1.apimodule.service.UserService;
 import java.util.List;
-import ru.hpclab.hl.module1.service.statistics.ObservabilityService;
+import ru.hpclab.hl.module1.apimodule.service.statistics.ObservabilityService;
 
 @RestController
 @RequestMapping("/users")

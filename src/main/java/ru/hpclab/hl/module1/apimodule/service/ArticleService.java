@@ -1,9 +1,9 @@
-package ru.hpclab.hl.module1.service;
+package ru.hpclab.hl.module1.apimodule.service;
 
 import org.springframework.stereotype.Service;
-import ru.hpclab.hl.module1.model.Article;
-import ru.hpclab.hl.module1.repository.ArticleRepository;
-import ru.hpclab.hl.module1.service.statistics.ObservabilityService;
+import ru.hpclab.hl.module1.apimodule.model.Article;
+import ru.hpclab.hl.module1.apimodule.repository.ArticleRepository;
+import ru.hpclab.hl.module1.apimodule.service.statistics.ObservabilityService;
 
 import java.util.List;
 import java.util.UUID;

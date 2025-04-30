@@ -1,4 +1,4 @@
-package ru.hpclab.hl.module1.service.statistics;
+package ru.hpclab.hl.module1.apimodule.service.statistics;
 
 import lombok.Getter;
 import lombok.Setter;

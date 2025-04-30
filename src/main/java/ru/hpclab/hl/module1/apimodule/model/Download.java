@@ -1,4 +1,4 @@
-package ru.hpclab.hl.module1.model;
+package ru.hpclab.hl.module1.apimodule.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

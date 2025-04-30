@@ -1,11 +1,10 @@
-package ru.hpclab.hl.module1.service;
+package ru.hpclab.hl.module1.apimodule.service;
 
 import org.springframework.stereotype.Service;
-import ru.hpclab.hl.module1.model.Download;
-import ru.hpclab.hl.module1.model.User;
-import ru.hpclab.hl.module1.repository.DownloadRepository;
-import ru.hpclab.hl.module1.repository.UserRepository;
-import ru.hpclab.hl.module1.service.statistics.ObservabilityService;
+import ru.hpclab.hl.module1.apimodule.model.Download;
+import ru.hpclab.hl.module1.apimodule.repository.DownloadRepository;
+import ru.hpclab.hl.module1.apimodule.repository.UserRepository;
+import ru.hpclab.hl.module1.apimodule.service.statistics.ObservabilityService;
 
 
 import java.util.List;

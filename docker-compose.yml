@@ -51,6 +51,10 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
       SERVER_TOMCAT_MAX_THREADS: ${SERVER_TOMCAT_MAX_THREADS}
       SPRING_JPA_SHOW_SQL: ${SPRING_JPA_SHOW_SQL}
+#      KAFKA_HOSTS: ${KAFKA_HOSTS:-hl22.zil:9094,hl23.zil:9094}
+#      KAFKA_GROUP_ID: ${KAFKA_GROUP_ID:-seryak0ff-consumer-group}
+#      KAFKA_TOPIC: ${KAFKA_TOPIC:-var17}
+#      KAFKA_CONCURRENCY: ${KAFKA_CONCURRENCY:-2}
     depends_on:
       postgres:
         condition: service_healthy
