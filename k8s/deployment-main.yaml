@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-service
+  namespace: var17
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: main-service
+  template:
+    metadata:
+      labels:
+        app: main-service
+    spec:
+      hostAliases:
+        - ip: "10.60.3.27"
+          hostnames:
+            - "hl22.zil"
+        - ip: "10.60.3.28"
+          hostnames:
+            - "hl23.zil"
+      imagePullSecrets:
+        - name: seryak0ff
+      containers:
+        - name: main-service
+          image: seryak0ff/main-service:12.2.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: config
+            - secretRef:
+                name: db-credentials
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1024Mi"
+            requests:
+              cpu: "1"
+              memory: "1024Mi"

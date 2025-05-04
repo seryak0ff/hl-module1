@@ -1,0 +1,43 @@
+piVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-service
+  namespace: var17
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: analytics-service
+  template:
+    metadata:
+      labels:
+        app: analytics-service
+    spec:
+      imagePullSecrets:
+        - name: seryak0ff
+      containers:
+        - name: analytics-service
+          image: seryak0ff/analytics-service:10.9.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/localhost/8081' || exit 1"
+            initialDelaySeconds: 90
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+          envFrom:
+            - configMapRef:
+                name: config
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1024Mi"
+            requests:
+              cpu: "1"
+              memory: "1024Mi"
