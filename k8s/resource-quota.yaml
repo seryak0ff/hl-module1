@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: quota
+  namespace: var17
+spec:
+  hard:
+    limits.cpu: "6"
+    limits.memory: 6Gi
+    requests.cpu: "6"
+    requests.memory: 6Gi
