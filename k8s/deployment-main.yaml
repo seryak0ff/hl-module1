@@ -24,7 +24,7 @@ spec:
         - name: seryak0ff
       containers:
         - name: main-service
-          image: seryak0ff/main-service:12.2.0
+          image: seryak0ff/main-service:17.0.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -33,6 +33,20 @@ spec:
                 name: config
             - secretRef:
                 name: db-credentials
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
           resources:
             limits:
               cpu: "1"

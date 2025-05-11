@@ -17,19 +17,23 @@ spec:
         - name: seryak0ff
       containers:
         - name: analytics-service
-          image: seryak0ff/analytics-service:10.9.0
+          image: seryak0ff/analytics-service:17.0.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
           livenessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/localhost/8081' || exit 1"
-            initialDelaySeconds: 90
-            periodSeconds: 15
-            timeoutSeconds: 10
+            httpGet:
+              path: /healthcheck
+              port: 8081
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8081
+            periodSeconds: 10
+            timeoutSeconds: 3
             failureThreshold: 3
           envFrom:
             - configMapRef:
